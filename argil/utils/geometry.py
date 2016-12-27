@@ -12,30 +12,16 @@ def intersect(r1, r2):
     return res
 
 
-def rect_distance(r1, r2):
-    if intersect(r1, r2):
-        return 0, 0
+def rect_distance(p, r):
+    px, py = p.x, p.y
+    rx, ry, rw, rh = r.x, r.y, r.width, r.height
+    dx = np.array([rx - px, 0, px - (rx + rw)])
+    dy = np.array([ry - py, 0, py - (ry + rh)])
 
-    x1, y1, x1b, y1b = r1.x, r1.y, r1.x + r1.width, r1.y + r1.height
-    x2, y2, x2b, y2b = r2.x, r2.y, r2.x + r2.width, r2.y + r2.height
+    dx = max(dx) if np.argmax(dx) == 2 else -max(dx)
+    dy = max(dy) if np.argmax(dy) == 2 else -max(dy)
+    return np.sqrt(dx ** 2 + dy ** 2), np.arctan2(dy, dx)
 
-    left = x2b < x1
-    right = x1b < x2
-    bottom = y2b < y1
-    top = y1b < y2
-    if top and left:
-        return dist((x1, y1b), (x2b, y2)), np.arctan2(y1b - y2, x1 - x2b)
-    elif left and bottom:
-        return dist((x1, y1), (x2b, y2b)), np.arctan2(y1 - y2b, x1 - x2b)
-    elif bottom and right:
-        return dist((x1b, y1), (x2, y2b)), np.arctan2(y1 - y2b, x1b - x2)
-    elif right and top:
-        return dist((x1b, y1b), (x2, y2)), np.arctan2(y1b - y2, x1b - x2)
-    elif left:
-        return x1 - x2b, np.arctan2(0, x1 - x2b)
-    elif right:
-        return x2 - x1b, np.arctan2(0, x1b - x2)
-    elif bottom:
-        return y1 - y2b, np.arctan2(y1 - y2b, 0)
-    elif top:
-        return y2 - y1b, np.arctan2(y1b - y2, 0)
+
+def circle_distance(p, c):
+    return dist((p.x, p.y), (c.x, c.y)), np.arctan2(c.y - p.y, c.x - p.x)
