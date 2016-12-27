@@ -53,13 +53,11 @@ class SocialForceAgent(Agent):
             radii_ij = neighbor[2].radius + self.radius
             mag = 2000 * np.exp((radii_ij - distance_ij) / FORCE_DISTANCE)
             force = mag * normal_ij
-            """
             if distance_ij < radii_ij:
                 tangent_ij = np.array([normal_ij[0], normal_ij[1]])
                 f_pushing = normal_ij * BODY_FORCE * (radii_ij - distance_ij)
                 f_friction = normal_ij * FRICTION * (radii_ij - distance_ij) * abs(neighbor[2].vel - cur_vel) * tangent_ij
                 force += f_pushing + f_friction
-            """
             social_force += force
         return social_force
 
