@@ -2,11 +2,11 @@ from .utils.geometry import *
 
 
 class Environment:
-    def __init__(self, agents, obstacles, width, height):
+    def __init__(self, agents, objects, width, height):
         self.width = width
         self.height = height
         self.agents = agents
-        self.obstacles = obstacles
+        self.objects = objects
 
     def _get_nearby(self, state, radius, items, dist_func):
         for item in items:
@@ -19,12 +19,13 @@ class Environment:
     def get_neighbors(self, state):
         return lambda r: self._get_nearby(state, r, self.agents, circle_distance)
 
-    def get_obstacles(self, state):
-        return lambda r: self._get_nearby(state, r, self.obstacles, rect_distance)
+    def get_objects(self, state):
+        return lambda r: self._get_nearby(state, r, self.objects, rect_distance)
 
     def step(self, delta=1.0):
+        done = False
         for agent in self.agents:
-            get_obstacles = self.get_obstacles(agent)
+            get_obstacles = self.get_objects(agent)
             get_neighbors = self.get_neighbors(agent)
-            agent.step(agent, get_obstacles, get_neighbors)
-        return False
+            done |= agent.step(agent, get_obstacles, get_neighbors)
+        return done

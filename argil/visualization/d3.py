@@ -24,6 +24,7 @@ class D3Simulation(Simulation):
             html = html.replace("__uid__", uid)
             html = html.replace("__sequence__", str(self.agent_data))
             html = html.replace("__start__", str(self.start_data))
+            html = html.replace("__object__", str(self.object_data))
             display(HTML(html))
 
     def run(self, num_steps=None, speed=1):
@@ -31,6 +32,7 @@ class D3Simulation(Simulation):
             raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
         step_ind = 0
         self.agent_data = []
+        self.object_data = [self.glance(object) for object in self.env.objects]
         self.start_data = [self.glance(agent) for agent in self.env.agents]
 
         while True:

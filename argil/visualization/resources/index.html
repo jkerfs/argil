@@ -7,12 +7,24 @@
     require(['d3'], function(d3) {
         window.d3 = d3;
         (function w(d3) {
-            var sequence = __sequence__;
-            var original_state = __start__;
+            var agent_sequence = __sequence__;
+            var original_agent_state = __start__;
+            var object_state = __object__;
             var svg = d3.select("svg#__uid__");
-            var data = sequence[0];
-            var box = svg.selectAll("g").data(data);
-            box.enter().append("g");
+            var agent_data = agent_sequence[0];
+            var box = svg.selectAll("g.agent").data(agent_data);
+            box.enter().append("g").classed("agent");
+
+            var objects = svg.selectAll("g.object").data(object_state);
+            objects.enter().append("g").classed("object");
+            objects.each(function(d,i) {
+                var obj = d3.select(this);
+                var shape = obj.append(object_state[i]["_shape"]);
+                for (var x in object_state[i]) {
+                    shape.attr(x, function(d) { return d[x]; });
+                    shape.style(x, function(d) { return d[x]; });
+                }
+            });
 
             /*
             var lines = svg.selectAll("path").data(data);
@@ -28,13 +40,13 @@
 
             //var line_data = []
 
-            for (var j = 0; j < data.length; j++) {
-                for (var i in original_state[j]) {
-                    data[j][i] = original_state[j][i];
+            for (var j = 0; j < agent_data.length; j++) {
+                for (var i in original_agent_state[j]) {
+                    agent_data[j][i] = original_agent_state[j][i];
                 }
                 /*
                 temp_line = [];
-                temp_line.push({"x": data[j]["cx"], "y": data[j]["cy"]});
+                temp_line.push({"x": agent_data[j]["cx"], "y": agent_data[j]["cy"]});
                 line_data.push(temp_line);
                 */
             }
@@ -46,26 +58,29 @@
 
             d3.timer(step);
 
-            ind = 0;
+            var ind = 0, prev_ind = 0;
             var speed = __speed__;
             var dur = Math.ceil(500 / speed);
-            var period = sequence.length * dur;
-            console.log(period);
+            var period = agent_sequence.length * dur;
             function step(elapsed) {
                 var t_p = elapsed % period;
-                var ind = t_p / dur;
+                ind = t_p / dur;
+                if (ind == prev_ind) {
+                    return false;
+                }
+                prev_ind = ind;
                 /*
                 if (ind == 0) {
                     line_data = [];
-                    for (var j in sequence[Math.floor(ind)]) {
+                    for (var j in agent_sequence[Math.floor(ind)]) {
                         line_data.push({"x": data[j]["cx"], "y": data[j]["cy"]});
                     }
                 }*/
 
-                var cur = sequence[Math.floor(ind)];
+                var cur = agent_sequence[Math.floor(ind)];
                 for (var j in cur) {
                     for (var i in cur[j]) {
-                        data[j][i] = cur[j][i];
+                        agent_data[j][i] = cur[j][i];
                     }
                     /*
                     line_data[j].push({"x": data[j]["cx"], "y": data[j]["cy"]});

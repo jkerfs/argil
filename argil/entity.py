@@ -1,19 +1,16 @@
 class Entity:
-    def __init__(self):
-        pass
-
-    def init_view(self):
-        pass
-
-class Agent(Entity):
-    def __init__(self, step, **kwargs):
-        super().__init__()
-        self.step = step
+    def __init__(self, **kwargs):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+class Agent(Entity):
+    def __init__(self, step, **kwargs):
+        super().__init__(**kwargs)
+        self.step = step
 
 
-class Obstacle(Entity):
-    def __init__(self):
-        super().__init__()
+
+
+class Object(Entity):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
