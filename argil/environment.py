@@ -26,7 +26,5 @@ class Environment:
         for agent in self.agents:
             get_obstacles = self.get_obstacles(agent)
             get_neighbors = self.get_neighbors(agent)
-            agent.vel = agent.step(get_obstacles, get_neighbors)
-        for agent in self.agents:
-            agent.x += agent.vel[0] * delta
-            agent.y += agent.vel[1] * delta
+            agent.step(agent, get_obstacles, get_neighbors)
+        return False

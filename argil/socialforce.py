@@ -5,8 +5,11 @@ import numpy as np
 
 
 class SocialForceAgent(Agent):
-    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, shape="circle", color="blue"):
-        super().__init__(x, y, radius, vel, shape, color)
+    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue"):
+        super().__init__(x, y)
+        self.radius = radius
+        self.vel = vel
+        self.color = color
         self.waypoints = []
         self.vel_max = vel_max
 
@@ -37,7 +40,8 @@ class SocialForceAgent(Agent):
         if np.linalg.norm(cur_vel) > self.vel_max:
             cur_vel = cur_vel / np.linalg.norm(cur_vel) * self.vel_max
         cur_vel *= delta_time
-        return cur_vel[0], cur_vel[1]
+        self.x += cur_vel[0]
+        self.y += cur_vel[1]
 
     def get_agent_force(self, cur_pos, cur_vel, neighbors):
         BODY_FORCE = 1200
@@ -48,7 +52,7 @@ class SocialForceAgent(Agent):
             d = neighbor[0]
             a = neighbor[1]
             n_pos = (neighbor[2].x, neighbor[2].y)
-            normal_ij = (cur_pos - n_pos) / d#np.array([np.cos(a), np.sin(a)])
+            normal_ij = (cur_pos - n_pos) / d
             distance_ij = neighbor[0]
             radii_ij = neighbor[2].radius + self.radius
             mag = 2000 * np.exp((radii_ij - distance_ij) / FORCE_DISTANCE)
@@ -74,5 +78,14 @@ class SocialForceAgent(Agent):
             obstacle_force += d_vec * Uab
             """
         return obstacle_force
+
+    def init_view(self):
+        return "circle", {"color": self.color, "radius": self.radius}
+
+    def render_view(self):
+        return {
+            "x": self.x,
+            "y": self.y,
+        }
 
 

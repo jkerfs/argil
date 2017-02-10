@@ -11,13 +11,14 @@ BLUE = (0, 0, 255)
 
 SCALE = 100
 
+
 class AgentSprite(Sprite):
     def __init__(self, agent):
         super().__init__()
         self.radius = agent.radius
         self.image = Surface([self.radius * 2 * SCALE, self.radius * 2 * SCALE])
-        self.image.fill((255,0,255))
-        self.image.set_colorkey((255,0,255))
+        self.image.fill((255, 0, 255))
+        self.image.set_colorkey((255, 0, 255))
         pygame.draw.circle(self.image, BLUE, (int(agent.radius * SCALE), int(agent.radius * SCALE)), int(agent.radius * SCALE))
         self.rect = self.image.get_rect()
         self.rect.x = (agent.x - self.radius) * SCALE

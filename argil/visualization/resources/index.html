@@ -1,0 +1,87 @@
+<script>
+    requirejs.config({
+        paths: {
+            d3: "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min"
+        }
+    });
+    require(['d3'], function(d3) {
+        window.d3 = d3;
+        (function w(d3) {
+            var sequence = __sequence__;
+            var original_state = __start__;
+            var svg = d3.select("svg#__uid__");
+            var data = sequence[0];
+            var box = svg.selectAll("g").data(data);
+            box.enter().append("g");
+
+            /*
+            var lines = svg.selectAll("path").data(data);
+            lines.enter().append("path").attr("stroke", "black").attr("stroke-width", 2).attr("fill", "none");
+            */
+
+            /*
+            var linFunc = d3.svg.line()
+                .x(function(d) { return d.x; })
+                .y(function(d) { return d.y; })
+                .interpolate("linear");
+             */
+
+            //var line_data = []
+
+            for (var j = 0; j < data.length; j++) {
+                for (var i in original_state[j]) {
+                    data[j][i] = original_state[j][i];
+                }
+                /*
+                temp_line = [];
+                temp_line.push({"x": data[j]["cx"], "y": data[j]["cy"]});
+                line_data.push(temp_line);
+                */
+            }
+
+            /*
+            lines.each(function(d,i) {d3.select(this).data(line_data[i]).attr("d", linFunc(line_data[i])); });
+            */
+            box.each(function(d,i) { d3.select(this).append(d["_shape"]); });
+
+            d3.timer(step);
+
+            ind = 0;
+            var speed = __speed__;
+            var dur = Math.ceil(500 / speed);
+            var period = sequence.length * dur;
+            console.log(period);
+            function step(elapsed) {
+                var t_p = elapsed % period;
+                var ind = t_p / dur;
+                /*
+                if (ind == 0) {
+                    line_data = [];
+                    for (var j in sequence[Math.floor(ind)]) {
+                        line_data.push({"x": data[j]["cx"], "y": data[j]["cy"]});
+                    }
+                }*/
+
+                var cur = sequence[Math.floor(ind)];
+                for (var j in cur) {
+                    for (var i in cur[j]) {
+                        data[j][i] = cur[j][i];
+                    }
+                    /*
+                    line_data[j].push({"x": data[j]["cx"], "y": data[j]["cy"]});
+                    */
+                }
+                /*
+                lines.each(function(d,i) {d3.select(this).data(line_data[i]).attr("d", linFunc(line_data[i])); });
+                */
+                for (var i in cur[0]) {
+                    box.selectAll("*").attr(i, function(d) { return d[i]; });
+                    box.selectAll("*").style(i, function(d) { return d[i]; });
+                }
+                return false;
+            }
+        })(d3);
+    });
+
+</script>
+<svg id="__uid__" width="__width__" height="__height__"></svg>
