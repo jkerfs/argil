@@ -18,5 +18,13 @@ for i in range(20):
     agents[-1].add_waypoint((10 - (start[0]), start[1] + .1))
 obstacles = [Object(x=0, y=0, width=10., height=.2), Object(x=0., y=4.8, width=10., height=.2)]
 env = Environment(agents, obstacles, width, height)
-game = PyGameSimulation(env)
+
+
+def glance(self):
+    return {"shape": "circle", "radius": .2, "color": (255,0,0)}
+
+def observe(self):
+    return {"x": self.x, "y": self.y}
+
+game = PyGameSimulation(env, observe, glance, 100)
 game.run()

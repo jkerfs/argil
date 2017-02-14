@@ -23,9 +23,9 @@ class Environment:
         return lambda r: self._get_nearby(state, r, self.objects, rect_distance)
 
     def step(self, delta=1.0):
-        done = False
+        done = True
         for agent in self.agents:
             get_obstacles = self.get_objects(agent)
             get_neighbors = self.get_neighbors(agent)
-            done |= agent.step(agent, get_obstacles, get_neighbors)
+            done &= agent.step(agent, get_obstacles, get_neighbors)
         return done

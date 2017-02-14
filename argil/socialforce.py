@@ -11,15 +11,26 @@ class SocialForceAgent(Agent):
         self.color = color
         self.waypoints = []
         self.vel_max = vel_max
+        self.done = False
 
     def add_waypoint(self, goal_pos):
         self.waypoints.append(goal_pos)
 
     def step(self, this, get_obstacles, get_neighbors):
+        if self.done:
+            return True
         if len(self.waypoints) == 0:
-            return 0, 0
-        if dist((self.x, self.y), self.waypoints[0]) < .1 and len(self.waypoints) > 1:
-            self.waypoints = self.waypoints[:-1]
+            self.done = True
+            return True
+        if dist((self.x, self.y), self.waypoints[-1]) < .1:
+            if len(self.waypoints) > 1:
+                self.waypoints = self.waypoints[:-1]
+            else:
+                self.x = self.waypoints[-1][0]
+                self.y = self.waypoints[-1][1]
+                self.done = True
+                return True
+
 
         delta_time = .05
         mass = 80
@@ -41,6 +52,7 @@ class SocialForceAgent(Agent):
         cur_vel *= delta_time
         self.x += cur_vel[0]
         self.y += cur_vel[1]
+
         return False
 
     def get_agent_force(self, cur_pos, cur_vel, neighbors):
