@@ -1,6 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
 from pygame import Surface
+from .simulation import Simulation
 
 # Colors
 BLACK = (0, 0, 0)
@@ -30,7 +31,7 @@ class AgentSprite(Sprite):
         self.rect.y = (self.agent.y - self.agent.radius) * SCALE
 
 
-class Game:
+class PyGameSimulation(Simulation):
     def __init__(self, env):
         self.env = env
         self.width = env.width * 100
@@ -57,7 +58,7 @@ class Game:
             all_sprites_list.update()
 
             screen.fill(WHITE)
-            for obstacle in self.env.obstacles:
+            for obstacle in self.env.objects:
                 screen.fill((0, 255, 0), (obstacle.x * 100, obstacle.y * 100, obstacle.width * 100, obstacle.height * 100))
 
             all_sprites_list.draw(screen)

@@ -1,4 +1,4 @@
-from .entity import Agent
+from .entity import Agent, Entity
 from .utils.geometry import *
 
 import numpy as np
@@ -6,8 +6,7 @@ import numpy as np
 
 class SocialForceAgent(Agent):
     def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue"):
-        super().__init__(x, y)
-        self.radius = radius
+        super().__init__(self.step, x=x, y=y, radius=radius)
         self.vel = vel
         self.color = color
         self.waypoints = []
@@ -16,7 +15,7 @@ class SocialForceAgent(Agent):
     def add_waypoint(self, goal_pos):
         self.waypoints.append(goal_pos)
 
-    def step(self, get_obstacles, get_neighbors):
+    def step(self, this, get_obstacles, get_neighbors):
         if len(self.waypoints) == 0:
             return 0, 0
         if dist((self.x, self.y), self.waypoints[0]) < .1 and len(self.waypoints) > 1:
@@ -42,6 +41,7 @@ class SocialForceAgent(Agent):
         cur_vel *= delta_time
         self.x += cur_vel[0]
         self.y += cur_vel[1]
+        return False
 
     def get_agent_force(self, cur_pos, cur_vel, neighbors):
         BODY_FORCE = 1200

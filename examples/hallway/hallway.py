@@ -3,9 +3,9 @@ import sys
 sys.path.append('../..')
 
 from argil.environment import Environment
-from argil.entity import Obstacle
+from argil.entity import Object
 from argil.socialforce import SocialForceAgent
-from argil.visualization.game import Game
+from argil.visualization.pygame import PyGameSimulation
 
 
 width, height = 10, 5
@@ -16,7 +16,7 @@ for i in range(20):
     start = ((i % 5) + .5, int(i / 5) + 1)
     agents.append(SocialForceAgent(start[0], start[1], .2, vel_max=vel))
     agents[-1].add_waypoint((10 - (start[0]), start[1] + .1))
-obstacles = [Obstacle(0, 0, 10., .2), Obstacle(0., 4.8, 10., .2)]
+obstacles = [Object(x=0, y=0, width=10., height=.2), Object(x=0., y=4.8, width=10., height=.2)]
 env = Environment(agents, obstacles, width, height)
-game = Game(env)
+game = PyGameSimulation(env)
 game.run()
