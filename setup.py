@@ -6,6 +6,7 @@ from setuptools import setup, find_packages
 from codecs import open
 
 requires = [
+    'matplotlib',
     'numpy',
     'pandas',
     'pygame',

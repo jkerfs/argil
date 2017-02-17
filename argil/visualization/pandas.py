@@ -3,14 +3,12 @@ from .simulation import Simulation
 
 
 class PandasSimulation(Simulation):
-    def __init__(self, env, observe, glance):
+    def __init__(self, env, observe):
         self.env = env
         self.observe = observe
         self.agent_data = []
 
-    def run(self, num_steps=None, speed=1):
-        if speed < 1 or speed > 100:
-            raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
+    def run(self, num_steps=None):
         step_ind = 0
         self.agent_data = []
 
