@@ -28,6 +28,7 @@ class D3Simulation(Simulation):
             display(HTML(html))
 
     def run(self, num_steps=None, speed=1):
+        self.env.reset()
         if speed < 1 or speed > 100:
             raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
         step_ind = 0

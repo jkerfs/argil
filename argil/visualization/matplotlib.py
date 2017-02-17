@@ -68,9 +68,11 @@ class MatplotlibSimulation(Simulation):
         anim.save(filename, writer='imagemagick')
         plt.clf()
 
-        display(HTML("<img src={} />".format(filename)))
+        unique_flag = ''.join(random.choice(string.ascii_uppercase) for _ in range(10))
+        display(HTML("<img src={} />".format(filename + "?" + unique_flag)))
 
     def run(self, num_steps=None, speed=1, step=None, figsize=(6,6), filename="temp.gif"):
+        self.env.reset()
         if speed < 1 or speed > 100:
             raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
         step_ind = 0

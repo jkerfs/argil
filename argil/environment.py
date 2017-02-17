@@ -29,3 +29,7 @@ class Environment:
             get_neighbors = self.get_neighbors(agent)
             done &= agent.step(agent, get_obstacles, get_neighbors)
         return done
+
+    def reset(self):
+        for agent in self.agents:
+            agent.reset()

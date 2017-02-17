@@ -52,6 +52,7 @@ class PyGameSimulation(Simulation):
         self.height = env.height * self.scale
 
     def run(self):
+        self.env.reset()
         pygame.init()
         screen = pygame.display.set_mode([self.width, self.height])
 

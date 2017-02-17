@@ -9,6 +9,7 @@ class PandasSimulation(Simulation):
         self.agent_data = []
 
     def run(self, num_steps=None):
+        self.env.reset()
         step_ind = 0
         self.agent_data = []
 
