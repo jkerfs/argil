@@ -58,7 +58,6 @@ class MatplotlibSimulation(Simulation):
                     o["height"],  # height
                 )
             )
-        axbg.scatter(10,10, color="blue")
 
         axfg = fig.add_axes(axbg.get_position(), frameon=False)
         num_steps = min(len(self.agent_data), num_steps)
