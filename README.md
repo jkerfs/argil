@@ -21,3 +21,6 @@ A simple library designed primarily for crowd and robot simulations in Python.
 1. Document modeling api and individual observers
 2. Organize `contrib` module for specialized agents and environments
 3. Differentiate continuous observers (pygame) from one-shot observers (d3, matplotlib, pandas)
+4. Implement multiple runs and combinations of parameters
+5. Let agents access parameters of the environment
+6. Provide a hook for users to update environment parameters at each step
