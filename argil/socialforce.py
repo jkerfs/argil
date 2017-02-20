@@ -22,9 +22,9 @@ class SocialForceAgent(Agent):
         if len(self.waypoints) == 0:
             self.done = True
             return True
-        if dist((self.x, self.y), self.waypoints[-1]) < .1:
+        if dist((self.x, self.y), self.waypoints[0]) < .1:
             if len(self.waypoints) > 1:
-                self.waypoints = self.waypoints[:-1]
+                self.waypoints = self.waypoints[1:]
             else:
                 self.x = self.waypoints[-1][0]
                 self.y = self.waypoints[-1][1]
@@ -85,10 +85,7 @@ class SocialForceAgent(Agent):
             d_vec = np.array([np.cos(a), np.sin(a)])
             mag = 4000 * np.exp((self.radius - d) / .015)
             obstacle_force += d_vec * mag
-            """
-            Uab = 10. * np.exp(-d / .10)
-            obstacle_force += d_vec * Uab
-            """
+
         return obstacle_force
 
     def init_view(self):
