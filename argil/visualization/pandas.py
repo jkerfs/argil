@@ -19,6 +19,7 @@ class PandasSimulation(Simulation):
             for j in range(inc):
                 done = self.env.step()
                 if (num_steps and step_ind > num_steps) or done:
+                    done = True
                     break
 
             for i, agent in enumerate(self.env.agents):

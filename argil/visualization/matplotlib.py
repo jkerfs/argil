@@ -84,6 +84,7 @@ class MatplotlibSimulation(Simulation):
             for i in range(inc):
                 done = self.env.step()
                 if (num_steps and step_ind > num_steps) or done:
+                    done = True
                     break
             self.agent_data.append([self.observe(agent) for agent in self.env.agents])
 
