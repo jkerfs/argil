@@ -1,11 +1,13 @@
-import numpy as np
 import sys
+
+import numpy as np
+
 sys.path.append('../..')
 
 from argil.environment import Environment
 from argil.entity import Object
-from argil.socialforce import SocialForceAgent
-from argil.visualization.pygame import PyGameSimulation
+from argil.contrib.crowd.socialforce import SocialForceAgent
+from argil.simulation.pygame import PyGameSimulation
 
 
 width, height = 10, 5

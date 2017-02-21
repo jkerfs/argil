@@ -1,4 +1,4 @@
-class Simulation:
+class BaseSimulation:
     def __init__(self, env, observe):
         self.env = env
         self.observer = observe

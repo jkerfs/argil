@@ -1,14 +1,15 @@
-import matplotlib.pyplot as plt
-from matplotlib import animation
-import matplotlib.patches as patches
-from IPython.display import display, HTML
 import random
 import string
 
-from .simulation import Simulation
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+from IPython.display import display, HTML
+from matplotlib import animation
+
+from argil.simulation.base import BaseSimulation
 
 
-class MatplotlibSimulation(Simulation):
+class MatplotlibSimulation(BaseSimulation):
     def __init__(self, env, observe, glance):
         self.env = env
         self.observe = observe

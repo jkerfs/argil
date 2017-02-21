@@ -1,8 +1,9 @@
 import pandas as pd
-from .simulation import Simulation
+
+from argil.simulation.base import BaseSimulation
 
 
-class PandasSimulation(Simulation):
+class PandasSimulation(BaseSimulation):
     def __init__(self, env, observe):
         self.env = env
         self.observe = observe

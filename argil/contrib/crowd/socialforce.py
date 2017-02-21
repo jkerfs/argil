@@ -1,5 +1,5 @@
-from .entity import Agent, Entity
-from .utils.geometry import *
+from argil.entity import Agent, Entity
+from argil.utils.geometry import *
 
 import numpy as np
 

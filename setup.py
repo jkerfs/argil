@@ -29,7 +29,7 @@ setup(
     author_email='jkerfs@calpoly.edu',
     url='https://github.com/jkerfs/argil',
     packages=find_packages(),
-    package_data={'mesa': ['visualization/resources/*']},
+    package_data={'mesa': ['simulation/resources/*']},
     include_package_data=True,
     install_requires=requires,
     keywords='robot crowd dynamic trajectory d3',

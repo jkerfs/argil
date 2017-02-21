@@ -1,12 +1,13 @@
+import os
 import random
 import string
-import os
+
 from IPython.display import display, HTML
 
-from .simulation import Simulation
+from argil.simulation.base import BaseSimulation
 
 
-class D3Simulation(Simulation):
+class D3Simulation(BaseSimulation):
     def __init__(self, env, observe, glance):
         self.env = env
         self.observe = observe

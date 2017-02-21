@@ -1,7 +1,8 @@
 import pygame
-from pygame.sprite import Sprite
 from pygame import Surface
-from .simulation import Simulation
+from pygame.sprite import Sprite
+
+from argil.simulation.base import BaseSimulation
 
 
 class AgentSprite(Sprite):
@@ -42,7 +43,7 @@ class AgentSprite(Sprite):
         self.rect.y = (self.y - self.radius) * self.scale
 
 
-class PyGameSimulation(Simulation):
+class PyGameSimulation(BaseSimulation):
     def __init__(self, env, observe, glance, scale):
         self.env = env
         self.observe = observe
