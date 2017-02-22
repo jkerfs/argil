@@ -4,35 +4,35 @@ from argil.simulation.base import BaseSimulation
 
 
 class PandasSimulation(BaseSimulation):
-    def __init__(self, env, observe):
-        self.env = env
+    def __init__(self, observe, num_steps=10, inc=1):
+        super().__init__(observe, num_steps)
         self.observe = observe
-        self.agent_data = []
+        self.inc = inc
 
-    def run(self, num_steps=None, inc=1):
-        self.env.reset()
+    def run(self, env):
+        env.reset()
         step_ind = 0
-        self.agent_data = []
+        agent_data = []
 
         while True:
-            step_ind += inc
+            step_ind += self.inc
             done = False
-            for j in range(inc):
-                done = self.env.step()
-                if (num_steps and step_ind > num_steps) or done:
+            for j in range(self.inc):
+                done = env.step()
+                if (self.num_steps and step_ind > self.num_steps) or done:
                     done = True
                     break
 
-            for i, agent in enumerate(self.env.agents):
+            for i, agent in enumerate(env.agents):
                 observations = self.observe(agent)
                 observations.update({"_step": step_ind, "_agent": i})
-                self.agent_data.append(observations)
+                agent_data.append(observations)
 
             if done:
                 break
 
-        self.df = pd.DataFrame(self.agent_data)
-        self.df.set_index(["_step", "_agent"], inplace=True)
-        self.df.index.names = ["step", "agent"]
-        return self.df
+        df = pd.DataFrame(agent_data)
+        df.set_index(["_step", "_agent"], inplace=True)
+        df.index.names = ["step", "agent"]
+        return df
 

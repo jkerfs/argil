@@ -1,7 +1,7 @@
 class BaseSimulation:
-    def __init__(self, env, observe):
-        self.env = env
+    def __init__(self, observe, num_steps=None):
         self.observer = observe
+        self.num_steps = num_steps
 
-    def run(self, num_steps=None):
+    def run(self, env):
         pass

@@ -44,21 +44,23 @@ class AgentSprite(Sprite):
 
 
 class PyGameSimulation(BaseSimulation):
-    def __init__(self, env, observe, glance, scale):
-        self.env = env
+    def __init__(self, observe, glance, scale):
         self.observe = observe
         self.glance = glance
         self.scale = scale
-        self.width = env.width * self.scale
-        self.height = env.height * self.scale
 
-    def run(self):
-        self.env.reset()
+
+    def run(self, env):
+        env.reset()
+
+        width = env.width * self.scale
+        height = env.height * self.scale
+
         pygame.init()
-        screen = pygame.display.set_mode([self.width, self.height])
+        screen = pygame.display.set_mode([width, height])
 
         all_sprites_list = pygame.sprite.Group()
-        for agent in self.env.agents:
+        for agent in env.agents:
             all_sprites_list.add(AgentSprite(agent,self.observe, self.glance, self.scale))
 
         done = False
@@ -69,12 +71,12 @@ class PyGameSimulation(BaseSimulation):
                 if event.type == pygame.QUIT:
                     done = True
 
-            done = self.env.step()
+            done = env.step()
 
             all_sprites_list.update()
 
             screen.fill((255, 255, 255))
-            for obstacle in self.env.objects:
+            for obstacle in env.objects:
                 screen.fill((0, 255, 0), (obstacle.x * self.scale, obstacle.y * self.scale, obstacle.width * self.scale, obstacle.height * self.scale))
 
             all_sprites_list.draw(screen)
