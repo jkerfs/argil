@@ -6,7 +6,7 @@ class Experiment:
     def __init__(self, builder, sim, params=None):
         self.builder = builder
         self.sim = sim
-        self.params = params
+        self.params = params if params else {}
 
     def _single(self, reps, keys, treatments):
 
