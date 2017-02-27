@@ -8,79 +8,134 @@ from matplotlib import animation
 
 from argil.simulation.base import BaseSimulation
 
+class Animation:
+    def __init__(self, width, height, agent_data, object_data):
+        self.width, self.height = width, height
+        self.agent_data = agent_data
+        self.object_data = object_data
 
-class MatplotlibSimulation(BaseSimulation):
-    def __init__(self, observe, glance, num_steps=None, speed=10, inc=1, step=None, figsize=(6,6), filename="temp.gif"):
-        self.observe = observe
-        self.glance = glance
-        self.num_steps = num_steps
-        self.speed = speed
-        self.inc = inc
-        self.step = step
-        self.figsize = figsize
-        self.filename = filename
-
-        self.agent_data = []
-
-    def snapshot(self, env, agent_data):
-        plt.figure(figsize=self.figsize)
-        plt.xlim((0, env.width))
-        plt.ylim((0, env.height))
-        plt.xticks([])
+    def display_step(self, figsize, step):
+        fig = plt.figure(figsize=figsize)
+        plt.clf()
+        axbg = fig.add_subplot(111)
+        plt.xlim((0, self.width))
+        plt.ylim((0, self.height))
         plt.gca().invert_yaxis()
-        for d in agent_data[self.step]:
-            plt.scatter(d["x"], d["y"], color=d["color"])
-        plt.title("Matplotlib Simulation")
-        plt.show()
+        plt.xticks([])
+        plt.yticks([])
+        for o in self.object_data:
+            axbg.add_patch(
+                patches.Rectangle(
+                    (o["x"], o["y"]),
+                    o["width"],
+                    o["height"],
+                )
+            )
+        axfg = fig.add_axes(axbg.get_position(), frameon=False)
 
-    def render(self, env, agent_data, object_data):
+        axfg.cla()
+        plt.xlim((0, self.width))
+        plt.ylim((0, self.height))
+        plt.gca().invert_yaxis()
+        plt.xticks([])
+        plt.yticks([])
+        for d in self.agent_data[step]:
+            plt.scatter(d["x"], d["y"], color=d["color"])
+        return fig
+
+    def _operate(self, figsize):
         def init_func():
             pass
 
         def func(frame):
             axfg.cla()
-            plt.xlim((0, env.width))
-            plt.ylim((0, env.height))
+            plt.xlim((0, self.width))
+            plt.ylim((0, self.height))
             plt.gca().invert_yaxis()
             plt.xticks([])
             plt.yticks([])
-            for d in agent_data[frame]:
+            for d in self.agent_data[frame]:
                 plt.scatter(d["x"], d["y"], color=d["color"])
 
-        fig = plt.figure(figsize=self.figsize)
+        fig = plt.figure(figsize=figsize)
         plt.clf()
 
         axbg = fig.add_subplot(111)
-        plt.xlim((0, env.width))
-        plt.ylim((0, env.height))
+        plt.xlim((0, self.width))
+        plt.ylim((0, self.height))
         plt.gca().invert_yaxis()
         plt.xticks([])
         plt.yticks([])
 
-        for o in object_data:
+        for o in self.object_data:
             axbg.add_patch(
                 patches.Rectangle(
-                    (o["x"], o["y"]) ,
+                    (o["x"], o["y"]),
                     o["width"],
                     o["height"],
                 )
             )
 
         axfg = fig.add_axes(axbg.get_position(), frameon=False)
-        num_steps = min(len(agent_data), self.num_steps)
 
-        anim = animation.FuncAnimation(fig, func, init_func=init_func,
-                                       frames=num_steps, interval=self.speed)
-        anim.save(self.filename, writer='imagemagick')
+        self.fig = fig
+        self.func = func
+        self.init_func = init_func
+
+    def save_gif(self, filename, figsize, num_steps, speed):
+        if speed < 1 or speed > 100:
+            raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
+        self._operate(figsize)
+        num_steps = min(len(self.agent_data), num_steps)
+
+        anim = animation.FuncAnimation(self.fig, self.func, init_func=self.init_func,
+                                       frames=num_steps, interval=speed)
+
+        anim.save(filename, writer='imagemagick')
         plt.clf()
+        return None
 
+    def display_gif(self, filename, figsize, num_steps, speed):
+        if speed < 1 or speed > 100:
+            raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
+        self._operate(figsize)
+        num_steps = min(len(self.agent_data), num_steps)
+
+        anim = animation.FuncAnimation(self.fig, self.func, init_func=self.init_func,
+                                       frames=num_steps, interval=speed)
         unique_flag = ''.join(random.choice(string.ascii_uppercase) for _ in range(10))
-        display(HTML("<img src={} />".format(self.filename + "?" + unique_flag)))
+        anim.save(filename, writer='imagemagick')
+        plt.clf()
+        return display(HTML('<img src="{}"/>'.format(filename + "?" + unique_flag)))
+
+    def display_video(self, figsize, num_steps, speed):
+        if speed < 1 or speed > 100:
+            raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
+        self._operate(figsize)
+        num_steps = min(len(self.agent_data), num_steps)
+
+        anim = animation.FuncAnimation(self.fig, self.func, init_func=self.init_func,
+                                            frames=num_steps, interval=speed)
+        plt.clf()
+        return display(HTML(anim.to_html5_video()))
+
+
+class MatplotlibSimulation(BaseSimulation):
+    def __init__(self, observe, glance, num_steps=None, inc=1, step=None):
+        self.observe = observe
+        self.glance = glance
+        self.num_steps = num_steps
+        self.inc = inc
+        self.step = step
+
+        self.agent_data = []
+
+    def render(self, env, agent_data, object_data):
+        return Animation(env.width, env.height, agent_data, object_data)
 
     def run(self, env):
         env.reset()
-        if self.speed < 1 or self.speed > 100:
-            raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
+
         step_ind = 0
         agent_data = []
         object_data = [self.glance(object) for object in env.objects]
@@ -96,8 +151,5 @@ class MatplotlibSimulation(BaseSimulation):
             agent_data.append([self.observe(agent) for agent in env.agents])
             if done:
                 break
-        if self.step:
-            self.snapshot(env, agent_data)
-        else:
-            self.render(env, agent_data, object_data)
+        return self.render(env, agent_data, object_data)
 
