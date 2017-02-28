@@ -14,7 +14,7 @@ class Animation:
         self.agent_data = agent_data
         self.object_data = object_data
 
-    def display_step(self, figsize, step):
+    def display_step(self, figsize, step, agent_index=None):
         fig = plt.figure(figsize=figsize)
         plt.clf()
         axbg = fig.add_subplot(111)
@@ -39,11 +39,16 @@ class Animation:
         plt.gca().invert_yaxis()
         plt.xticks([])
         plt.yticks([])
-        for d in self.agent_data[step]:
-            plt.scatter(d["x"], d["y"], color=d["color"])
+        if agent_index is not None:
+            cur = self.agent_data[step][agent_index]
+            plt.scatter(cur["x"], cur["y"], color=cur["color"], s=cur.get("size", 10))
+        else:
+            for d in self.agent_data[step]:
+                if d:
+                    plt.scatter(d["x"], d["y"], color=d["color"], s=d.get("size", 10))
         return fig
 
-    def _operate(self, figsize):
+    def _operate(self, figsize, agent_index=None):
         def init_func():
             pass
 
@@ -54,8 +59,14 @@ class Animation:
             plt.gca().invert_yaxis()
             plt.xticks([])
             plt.yticks([])
-            for d in self.agent_data[frame]:
-                plt.scatter(d["x"], d["y"], color=d["color"])
+
+            if agent_index is not None:
+                cur = self.agent_data[frame][agent_index]
+                plt.scatter(cur["x"], cur["y"], color=cur["color"], s=cur.get("size", 10))
+            else:
+                for d in self.agent_data[frame]:
+                    if d:
+                        plt.scatter(d["x"], d["y"], color=d["color"], s=d.get("size", 10))
 
         fig = plt.figure(figsize=figsize)
         plt.clf()
@@ -82,10 +93,10 @@ class Animation:
         self.func = func
         self.init_func = init_func
 
-    def save_gif(self, filename, figsize, num_steps, speed):
+    def save_gif(self, filename, figsize, num_steps, speed, agent_index=None):
         if speed < 1 or speed > 100:
             raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
-        self._operate(figsize)
+        self._operate(figsize, agent_index)
         num_steps = min(len(self.agent_data), num_steps)
 
         anim = animation.FuncAnimation(self.fig, self.func, init_func=self.init_func,
@@ -95,10 +106,10 @@ class Animation:
         plt.clf()
         return None
 
-    def display_gif(self, filename, figsize, num_steps, speed):
+    def display_gif(self, filename, figsize, num_steps, speed, agent_index=None):
         if speed < 1 or speed > 100:
             raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
-        self._operate(figsize)
+        self._operate(figsize, agent_index)
         num_steps = min(len(self.agent_data), num_steps)
 
         anim = animation.FuncAnimation(self.fig, self.func, init_func=self.init_func,
@@ -108,10 +119,10 @@ class Animation:
         plt.clf()
         return display(HTML('<img src="{}"/>'.format(filename + "?" + unique_flag)))
 
-    def display_video(self, figsize, num_steps, speed):
+    def display_video(self, figsize, num_steps, speed, agent_index=None):
         if speed < 1 or speed > 100:
             raise Exception("speed must be greater than or equal to 1 and less than or equal to 100")
-        self._operate(figsize)
+        self._operate(figsize, agent_index)
         num_steps = min(len(self.agent_data), num_steps)
 
         anim = animation.FuncAnimation(self.fig, self.func, init_func=self.init_func,
