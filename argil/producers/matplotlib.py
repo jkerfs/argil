@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from IPython.display import display, HTML
 from matplotlib import animation
 
-from argil.simulation.base import BaseSimulation
+from argil.producers.base import BaseProducer
 
 class Animation:
     def __init__(self, width, height, agent_data, object_data):
@@ -29,6 +29,7 @@ class Animation:
                     (o["x"], o["y"]),
                     o["width"],
                     o["height"],
+                    color = o.get("color", o.get("fill", "black"))
                 )
             )
         axfg = fig.add_axes(axbg.get_position(), frameon=False)
@@ -84,6 +85,7 @@ class Animation:
                     (o["x"], o["y"]),
                     o["width"],
                     o["height"],
+                    color=o.get("color", o.get("fill", "black"))
                 )
             )
 
@@ -131,36 +133,14 @@ class Animation:
         return display(HTML(anim.to_html5_video()))
 
 
-class MatplotlibSimulation(BaseSimulation):
-    def __init__(self, observe, glance, num_steps=None, inc=1, step=None):
-        self.observe = observe
-        self.glance = glance
-        self.num_steps = num_steps
-        self.inc = inc
-        self.step = step
+class MatplotlibProducer(BaseProducer):
+    def __init__(self):
+        pass
 
-        self.agent_data = []
+    def produce(self, record):
+        env_data = record.env_data
+        agent_data = record.observed_agent_data
+        object_data = record.glance_object_data
 
-    def render(self, env, agent_data, object_data):
-        return Animation(env.width, env.height, agent_data, object_data)
-
-    def run(self, env):
-        env.reset()
-
-        step_ind = 0
-        agent_data = []
-        object_data = [self.glance(object) for object in env.objects]
-
-        while True:
-            step_ind += self.inc
-            done = False
-            for i in range(self.inc):
-                done = env.step()
-                if (self.num_steps and step_ind > self.num_steps) or done:
-                    done = True
-                    break
-            agent_data.append([self.observe(agent) for agent in env.agents])
-            if done:
-                break
-        return self.render(env, agent_data, object_data)
+        return Animation(env_data["width"], env_data["height"], agent_data, object_data)
 

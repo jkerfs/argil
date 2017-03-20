@@ -90,6 +90,14 @@
                 lines.each(function(d,i) {d3.select(this).data(line_data[i]).attr("d", linFunc(line_data[i])); });
                 */
                 for (var i in cur[0]) {
+                    if (i == "x") {
+                        box.selectAll("*").attr("cx", function(d) { return d[i]; });
+                        box.selectAll("*").style("cx", function(d) { return d[i]; });
+                    }
+                    if (i == "y") {
+                        box.selectAll("*").attr("cy", function(d) { return d[i]; });
+                        box.selectAll("*").style("cy", function(d) { return d[i]; });
+                    }
                     box.selectAll("*").attr(i, function(d) { return d[i]; });
                     box.selectAll("*").style(i, function(d) { return d[i]; });
                 }

@@ -52,7 +52,7 @@ class Experiment:
             else:
                 formatted_results[n] = [r]
         if len(formatted_results) == 1:
-            return formatted_results[formatted_results.keys()[0]]
+            return formatted_results[list(formatted_results.keys())[0]]
         return formatted_results
 
 

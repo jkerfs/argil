@@ -7,7 +7,7 @@ sys.path.append('../..')
 from argil.environment import Environment
 from argil.entity import Object
 from argil.contrib.crowd.socialforce import SocialForceAgent
-from argil.simulation.pygame import PyGameSimulation
+from argil.simulations import PyGameSimulation
 
 
 width, height = 10, 5
@@ -23,10 +23,11 @@ env = Environment(agents, obstacles, width, height)
 
 
 def glance(self):
-    return {"shape": "circle", "radius": .2, "color": (255,0,0)}
+    return {"_shape": "circle", "radius": .2, "color": (255,0,0)}
+
 
 def observe(self):
     return {"x": self.x, "y": self.y}
 
-game = PyGameSimulation(env, observe, glance, 100)
-game.run()
+game = PyGameSimulation(glance, observe, None, 100)
+game.run(env)

@@ -2,8 +2,6 @@ import pygame
 from pygame import Surface
 from pygame.sprite import Sprite
 
-from argil.simulation.base import BaseSimulation
-
 
 class AgentSprite(Sprite):
     def __init__(self, agent, observe, glance, scale):
@@ -14,10 +12,10 @@ class AgentSprite(Sprite):
         self.scale = scale
 
         glance_params = glance(self.agent)
-        if "shape" not in glance_params:
+        if "_shape" not in glance_params:
             raise Exception("Must specify agent shape")
 
-        self.shape = glance_params["shape"]
+        self.shape = glance_params["_shape"]
         if self.shape == "circle":
             self.radius = glance_params.get("radius", 1)
             self.color = glance_params.get("color", ((0, 0, 255)))
@@ -43,12 +41,12 @@ class AgentSprite(Sprite):
         self.rect.y = (self.y - self.radius) * self.scale
 
 
-class PyGameSimulation(BaseSimulation):
-    def __init__(self, observe, glance, scale):
+class PyGameSimulation:
+    def __init__(self, glance, observe, survey=None, scale=100):
         self.observe = observe
         self.glance = glance
+        self.survey = survey
         self.scale = scale
-
 
     def run(self, env):
         env.reset()
