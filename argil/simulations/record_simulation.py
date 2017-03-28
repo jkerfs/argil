@@ -4,11 +4,12 @@ Record = namedtuple("Record", ["observed_agent_data", "glance_agent_data", "glan
 
 
 class RecordSimulation:
-    def __init__(self, glance, observe, survey, num_steps=10):
+    def __init__(self, glance, observe, survey, num_steps=10, inc=1):
         self.glance = glance
         self.observe = observe
         self.survey = survey
         self.num_steps = num_steps
+        self.inc = inc
 
     def run(self, env):
         env.reset()
@@ -21,8 +22,10 @@ class RecordSimulation:
 
         while True:
             step_ind += 1
-
-            done = env.step()
+            for i in range(self.inc):
+                done = env.step()
+                if done:
+                    break
             observed_agent_data.append([self.observe(agent) for agent in env.agents])
 
             if (self.num_steps and step_ind > self.num_steps) or done:

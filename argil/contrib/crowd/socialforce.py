@@ -6,7 +6,11 @@ import numpy as np
 
 class SocialForceAgent(Agent):
     def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue"):
-        super().__init__(self.step, x=x, y=y, radius=radius)
+        #super(Agent, self).__init__(self.step, x=x, y=y, radius=radius)
+        self.params = {"x": x, "y": y, "radius": radius}
+        self.x = x
+        self.y = y
+        self.radius = radius
         self.vel = vel
         self.color = color
         self.waypoints = []
