@@ -1,4 +1,4 @@
-from argil.entity import Agent, Entity
+from argil.entity import Agent
 from argil.utils.geometry import *
 
 import numpy as np
@@ -6,7 +6,9 @@ import numpy as np
 
 class SocialForceAgent(Agent):
     def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None):
-        self.params = {"x": x, "y": y, "radius": radius}
+        super(self.__class__, self).__init__()
+        self.params = {"x": x, "y": y, "radius": radius, "waypoints": [],
+                       "vel": vel, "vel_max": vel_max, "color": color, "delay": delay}
         self.x = x
         self.y = y
         self.radius = radius
@@ -24,6 +26,7 @@ class SocialForceAgent(Agent):
 
     def add_waypoint(self, goal_pos):
         self.waypoints.append(goal_pos)
+        self.params["waypoints"].append(goal_pos)
 
     def step(self, this, get_obstacles, get_neighbors):
         if type(self.delay) == int:
@@ -107,3 +110,12 @@ class SocialForceAgent(Agent):
             obstacle_force += d_vec * mag
 
         return obstacle_force
+
+    def reset(self):
+        super(SocialForceAgent, self).reset()
+        self.done = False
+        if self.delay is not None:
+            self.x = np.inf
+            self.y = np.inf
+            self.start_x = self.x
+            self.start_y = self.y
