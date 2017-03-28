@@ -5,8 +5,7 @@ import numpy as np
 
 
 class SocialForceAgent(Agent):
-    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue"):
-        #super(Agent, self).__init__(self.step, x=x, y=y, radius=radius)
+    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None):
         self.params = {"x": x, "y": y, "radius": radius}
         self.x = x
         self.y = y
@@ -16,11 +15,28 @@ class SocialForceAgent(Agent):
         self.waypoints = []
         self.vel_max = vel_max
         self.done = False
+        self.delay = delay
+        if self.delay is not None:
+            self.x = np.inf
+            self.y = np.inf
+            self.start_x = x
+            self.start_y = y
 
     def add_waypoint(self, goal_pos):
         self.waypoints.append(goal_pos)
 
     def step(self, this, get_obstacles, get_neighbors):
+        if type(self.delay) == int:
+            self.delay -= 1
+            if self.delay > 0:
+                self.x = np.inf
+                self.y = np.inf
+                return False
+            else:
+                self.x = self.start_x
+                self.y = self.start_y
+                self.delay = None
+
         if self.done:
             return True
         if len(self.waypoints) == 0:
@@ -91,14 +107,3 @@ class SocialForceAgent(Agent):
             obstacle_force += d_vec * mag
 
         return obstacle_force
-
-    def init_view(self):
-        return "circle", {"color": self.color, "radius": self.radius}
-
-    def render_view(self):
-        return {
-            "x": self.x,
-            "y": self.y,
-        }
-
-
