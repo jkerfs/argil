@@ -36,7 +36,7 @@ class AgentSprite(Sprite):
         self.x = obs_params.get("x", self.x)
         self.y = obs_params.get("y", self.y)
         self.radius = obs_params.get("radius", self.radius)
-
+        self.color = obs_params.get("color", self.color)
         self.rect.x = (self.x - self.radius) * self.scale
         self.rect.y = (self.y - self.radius) * self.scale
 
@@ -75,7 +75,8 @@ class PyGameSimulation:
 
             screen.fill((255, 255, 255))
             for obstacle in env.objects:
-                screen.fill((0, 255, 0), (obstacle.x * self.scale, obstacle.y * self.scale, obstacle.width * self.scale, obstacle.height * self.scale))
+                data = self.glance(obstacle)
+                screen.fill(data["color"], (obstacle.x * self.scale, obstacle.y * self.scale, obstacle.width * self.scale, obstacle.height * self.scale))
 
             all_sprites_list.draw(screen)
 

@@ -8,7 +8,8 @@ class SocialForceAgent(Agent):
     def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None):
         super(self.__class__, self).__init__()
         self.params = {"x": x, "y": y, "radius": radius, "waypoints": [],
-                       "vel": vel, "vel_max": vel_max, "color": color, "delay": delay}
+                       "vel": vel, "vel_max": vel_max, "color": color, "delay": delay,
+                       "start_x": x, "start_y": y}
         self.x = x
         self.y = y
         self.radius = radius
@@ -19,10 +20,10 @@ class SocialForceAgent(Agent):
         self.done = False
         self.delay = delay
         if self.delay is not None:
-            self.x = np.inf
-            self.y = np.inf
             self.start_x = x
             self.start_y = y
+            self.x = np.inf
+            self.y = np.inf
 
     def add_waypoint(self, goal_pos):
         self.waypoints.append(goal_pos)
@@ -81,7 +82,7 @@ class SocialForceAgent(Agent):
     def get_agent_force(self, cur_pos, cur_vel, neighbors):
         BODY_FORCE = 1200
         FRICTION = 2400
-        FORCE_DISTANCE = .015
+        FORCE_DISTANCE = .2
         social_force = np.array([0., 0.])
         for neighbor in neighbors:
             d = neighbor[0]
@@ -115,7 +116,7 @@ class SocialForceAgent(Agent):
         super(SocialForceAgent, self).reset()
         self.done = False
         if self.delay is not None:
-            self.x = np.inf
-            self.y = np.inf
             self.start_x = self.x
             self.start_y = self.y
+            self.x = np.inf
+            self.y = np.inf
