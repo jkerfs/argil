@@ -4,12 +4,30 @@ from argil.utils.geometry import *
 import numpy as np
 
 
+class SocialForceParams:
+    def __init__(self, body_force=1200, friction=2400, social_distance=.2, social_force=2000, obstacle_force=4000,
+                 obstacle_distance=.015):
+        self.body_force = body_force
+        self.friction = friction
+
+        self.social_distance = social_distance
+        self.social_force = social_force
+
+        self.obstacle_distance = obstacle_distance
+        self.obstacle = obstacle_force
+
+
 class SocialForceAgent(Agent):
-    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None):
+    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None, params=None):
         super(self.__class__, self).__init__()
         self.params = {"x": x, "y": y, "radius": radius, "waypoints": [],
                        "vel": vel, "vel_max": vel_max, "color": color, "delay": delay,
                        "start_x": x, "start_y": y}
+        if not params:
+            self.params = SocialForceParams()
+        else:
+            self.params = params
+
         self.x = x
         self.y = y
         self.radius = radius
@@ -80,23 +98,23 @@ class SocialForceAgent(Agent):
         return False
 
     def get_agent_force(self, cur_pos, cur_vel, neighbors):
-        BODY_FORCE = 1200
-        FRICTION = 2400
-        FORCE_DISTANCE = .2
         social_force = np.array([0., 0.])
         for neighbor in neighbors:
             d = neighbor[0]
             a = neighbor[1]
-            n_pos = (neighbor[2].x, neighbor[2].y)
+            n = neighbor[2]
+            if n.done:
+                continue
+            n_pos = (n.x, n.y)
             normal_ij = (cur_pos - n_pos) / d
             distance_ij = neighbor[0]
-            radii_ij = neighbor[2].radius + self.radius
-            mag = 2000 * np.exp((radii_ij - distance_ij) / FORCE_DISTANCE)
+            radii_ij = n.radius + self.radius
+            mag = self.params.social_force * np.exp((radii_ij - distance_ij) / self.params.social_distance)
             force = mag * normal_ij
             if distance_ij < radii_ij:
                 tangent_ij = np.array([normal_ij[0], normal_ij[1]])
-                f_pushing = normal_ij * BODY_FORCE * (radii_ij - distance_ij)
-                f_friction = normal_ij * FRICTION * (radii_ij - distance_ij) * abs(neighbor[2].vel - cur_vel) * tangent_ij
+                f_pushing = normal_ij * self.params.body_force * (radii_ij - distance_ij)
+                f_friction = normal_ij * self.params.friction * (radii_ij - distance_ij) * abs(n.vel - cur_vel) * tangent_ij
                 force += f_pushing + f_friction
             social_force += force
         return social_force
@@ -107,7 +125,7 @@ class SocialForceAgent(Agent):
             d = obstacle[0]
             a = obstacle[1]
             d_vec = np.array([np.cos(a), np.sin(a)])
-            mag = 4000 * np.exp((self.radius - d) / .015)
+            mag = self.params.obstacle_force * np.exp((self.radius - d) / self.params.obstacle_distance)
             obstacle_force += d_vec * mag
 
         return obstacle_force
