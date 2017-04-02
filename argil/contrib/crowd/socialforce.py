@@ -4,7 +4,7 @@ from argil.utils.geometry import *
 import numpy as np
 
 
-class SocialForceParams:
+class SocialForceConstants:
     def __init__(self, body_force=1200, friction=2400, social_distance=.2, social_force=2000, obstacle_force=4000,
                  obstacle_distance=.015):
         self.body_force = body_force
@@ -14,19 +14,19 @@ class SocialForceParams:
         self.social_force = social_force
 
         self.obstacle_distance = obstacle_distance
-        self.obstacle = obstacle_force
+        self.obstacle_force = obstacle_force
 
 
 class SocialForceAgent(Agent):
-    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None, params=None):
+    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None, constants=None):
         super(self.__class__, self).__init__()
         self.params = {"x": x, "y": y, "radius": radius, "waypoints": [],
                        "vel": vel, "vel_max": vel_max, "color": color, "delay": delay,
                        "start_x": x, "start_y": y}
-        if not params:
-            self.params = SocialForceParams()
+        if not constants:
+            self.constants = SocialForceConstants()
         else:
-            self.params = params
+            self.constants = constants
 
         self.x = x
         self.y = y
@@ -109,12 +109,12 @@ class SocialForceAgent(Agent):
             normal_ij = (cur_pos - n_pos) / d
             distance_ij = neighbor[0]
             radii_ij = n.radius + self.radius
-            mag = self.params.social_force * np.exp((radii_ij - distance_ij) / self.params.social_distance)
+            mag = self.constants.social_force * np.exp((radii_ij - distance_ij) / self.constants.social_distance)
             force = mag * normal_ij
             if distance_ij < radii_ij:
                 tangent_ij = np.array([normal_ij[0], normal_ij[1]])
-                f_pushing = normal_ij * self.params.body_force * (radii_ij - distance_ij)
-                f_friction = normal_ij * self.params.friction * (radii_ij - distance_ij) * abs(n.vel - cur_vel) * tangent_ij
+                f_pushing = normal_ij * self.constants.body_force * (radii_ij - distance_ij)
+                f_friction = normal_ij * self.constants.friction * (radii_ij - distance_ij) * abs(n.vel - cur_vel) * tangent_ij
                 force += f_pushing + f_friction
             social_force += force
         return social_force
@@ -125,7 +125,7 @@ class SocialForceAgent(Agent):
             d = obstacle[0]
             a = obstacle[1]
             d_vec = np.array([np.cos(a), np.sin(a)])
-            mag = self.params.obstacle_force * np.exp((self.radius - d) / self.params.obstacle_distance)
+            mag = self.constants.obstacle_force * np.exp((self.radius - d) / self.constants.obstacle_distance)
             obstacle_force += d_vec * mag
 
         return obstacle_force
