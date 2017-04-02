@@ -5,7 +5,7 @@ import numpy as np
 
 
 class SocialForceConstants:
-    def __init__(self, body_force=1200, friction=2400, social_distance=.2, social_force=2000, obstacle_force=4000,
+    def __init__(self, body_force=1200, friction=2400, social_distance=.3, social_force=2000, obstacle_force=4000,
                  obstacle_distance=.015):
         self.body_force = body_force
         self.friction = friction
@@ -17,9 +17,10 @@ class SocialForceConstants:
         self.obstacle_force = obstacle_force
 
 
+
 class SocialForceAgent(Agent):
     def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None, constants=None):
-        super(self.__class__, self).__init__()
+        Agent.__init__(self)
         self.params = {"x": x, "y": y, "radius": radius, "waypoints": [],
                        "vel": vel, "vel_max": vel_max, "color": color, "delay": delay,
                        "start_x": x, "start_y": y}
@@ -27,6 +28,7 @@ class SocialForceAgent(Agent):
             self.constants = SocialForceConstants()
         else:
             self.constants = constants
+        self.priority = np.random.rand()
 
         self.x = x
         self.y = y
@@ -35,6 +37,7 @@ class SocialForceAgent(Agent):
         self.color = color
         self.waypoints = []
         self.vel_max = vel_max
+        self.vel_des = .8 * vel_max
         self.done = False
         self.delay = delay
         if self.delay is not None:
@@ -42,6 +45,7 @@ class SocialForceAgent(Agent):
             self.start_y = y
             self.x = np.inf
             self.y = np.inf
+        self.preferred = np.array([0., 0.])
 
     def add_waypoint(self, goal_pos):
         self.waypoints.append(goal_pos)
@@ -82,7 +86,8 @@ class SocialForceAgent(Agent):
 
         goal = self.waypoints[0]
         goal_angle = np.arctan2(goal[1] - self.y, goal[0] - self.x)
-        goal_force = (np.array([np.cos(goal_angle), np.sin(goal_angle)]) - cur_vel) * mass / delta_time
+        self.preferred = np.array([np.cos(goal_angle), np.sin(goal_angle)])
+        goal_force = (self.preferred - cur_vel) * mass / delta_time
 
         social_force = self.get_agent_force(cur_pos, cur_vel, get_neighbors(10))
         obstacle_force = self.get_obstacle_force(get_obstacles(10))
@@ -99,18 +104,38 @@ class SocialForceAgent(Agent):
 
     def get_agent_force(self, cur_pos, cur_vel, neighbors):
         social_force = np.array([0., 0.])
+
         for neighbor in neighbors:
             d = neighbor[0]
             a = neighbor[1]
             n = neighbor[2]
-            if n.done:
-                continue
+            #if n.done:
+            #    continue
+
+            right_of_way = self.priority > n.priority
+
             n_pos = (n.x, n.y)
             normal_ij = (cur_pos - n_pos) / d
             distance_ij = neighbor[0]
-            radii_ij = n.radius + self.radius
-            mag = self.constants.social_force * np.exp((radii_ij - distance_ij) / self.constants.social_distance)
-            force = mag * normal_ij
+            radii_ij = self.radius - n.radius
+
+            d_agt = self.constants.social_distance
+
+            avoid_norm = np.array(normal_ij)
+            if not right_of_way:
+                d_agt = self.constants.social_distance + n.radius * .5
+
+                prefSpeed = n.vel_des
+                if prefSpeed < .0001:
+                    perpDir = (-normal_ij[1], normal_ij[0])
+                else:
+                    prefDir = n.preferred
+                    perpDir = (-prefDir[1], prefDir[0])
+                avoid_norm = perpDir
+
+            mag = self.constants.social_force * np.exp((radii_ij - distance_ij) / d_agt)
+            force = np.array(mag) * np.array(avoid_norm)
+
             if distance_ij < radii_ij:
                 tangent_ij = np.array([normal_ij[0], normal_ij[1]])
                 f_pushing = normal_ij * self.constants.body_force * (radii_ij - distance_ij)
@@ -131,10 +156,11 @@ class SocialForceAgent(Agent):
         return obstacle_force
 
     def reset(self):
-        super(SocialForceAgent, self).reset()
+        Agent.__init__(self)
         self.done = False
         if self.delay is not None:
             self.start_x = self.x
             self.start_y = self.y
             self.x = np.inf
             self.y = np.inf
+        self.preferred = np.array([0., 0.])
