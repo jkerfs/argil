@@ -5,7 +5,7 @@ import numpy as np
 
 
 class SocialForceConstants:
-    def __init__(self, body_force=1200, friction=2400, social_distance=.3, social_force=2000, obstacle_force=4000,
+    def __init__(self, body_force=2400, friction=3000, social_distance=.3, social_force=6000, obstacle_force=4000,
                  obstacle_distance=.015):
         self.body_force = body_force
         self.friction = friction
@@ -47,6 +47,9 @@ class SocialForceAgent(Agent):
             self.y = np.inf
         self.preferred = np.array([0., 0.])
 
+        self.ndir = np.random.choice([-1, 1])
+        self.odir = self.ndir * -1
+
     def add_waypoint(self, goal_pos):
         self.waypoints.append(goal_pos)
         self.params["waypoints"].append(goal_pos)
@@ -64,6 +67,8 @@ class SocialForceAgent(Agent):
                 self.delay = None
 
         if self.done:
+            self.x = np.inf
+            self.y = np.inf
             return True
         if len(self.waypoints) == 0:
             self.done = True
@@ -73,10 +78,12 @@ class SocialForceAgent(Agent):
                 self.waypoints = self.waypoints[1:]
             else:
                 self.x = self.waypoints[-1][0]
+
+
+
                 self.y = self.waypoints[-1][1]
                 self.done = True
                 return True
-
 
         delta_time = .05
         mass = 80
@@ -109,8 +116,8 @@ class SocialForceAgent(Agent):
             d = neighbor[0]
             a = neighbor[1]
             n = neighbor[2]
-            #if n.done:
-            #    continue
+            if n.done or n.delay:
+                continue
 
             right_of_way = self.priority > n.priority
 
@@ -125,12 +132,13 @@ class SocialForceAgent(Agent):
             if not right_of_way:
                 d_agt = self.constants.social_distance + n.radius * .5
 
+
                 prefSpeed = n.vel_des
                 if prefSpeed < .0001:
-                    perpDir = (-normal_ij[1], normal_ij[0])
+                    perpDir = (self.ndir * normal_ij[1], self.odir * normal_ij[0])
                 else:
                     prefDir = n.preferred
-                    perpDir = (-prefDir[1], prefDir[0])
+                    perpDir = (self.ndir * prefDir[1], self.odir * prefDir[0])
                 avoid_norm = perpDir
 
             mag = self.constants.social_force * np.exp((radii_ij - distance_ij) / d_agt)
@@ -159,8 +167,8 @@ class SocialForceAgent(Agent):
         Agent.__init__(self)
         self.done = False
         if self.delay is not None:
-            self.start_x = self.x
-            self.start_y = self.y
             self.x = np.inf
             self.y = np.inf
         self.preferred = np.array([0., 0.])
+        self.ndir = np.random.choice([-1, 1])
+        self.odir = self.ndir * -1
