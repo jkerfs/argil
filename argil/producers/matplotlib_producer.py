@@ -41,12 +41,21 @@ class Animation:
         plt.xticks([])
         plt.yticks([])
         if agent_index is not None:
-            cur = self.agent_data[step][agent_index]
-            plt.scatter(cur["x"], cur["y"], color=cur["color"], s=cur.get("size", 10))
+            if type(step) is int:
+                cur = self.agent_data[step][agent_index]
+                plt.scatter(cur["x"], cur["y"], color=cur["color"], s=cur.get("size", 100))
         else:
-            for d in self.agent_data[step]:
-                if d:
-                    plt.scatter(d["x"], d["y"], color=d["color"], s=d.get("size", 10))
+            if type(step) is int:
+                for d in self.agent_data[step]:
+                    if d:
+                        plt.scatter(d["x"], d["y"], color=d["color"], s=d.get("size", 100))
+            elif type(step) is list:
+                for i, s in enumerate(step):
+                    for d in self.agent_data[s]:
+                        if d:
+                            biggest_size = d.get("size", 100)
+                            sze = biggest_size * (i + 1) / float(len(step))
+                            plt.scatter(d["x"], d["y"], color=d["color"], s=sze)
         return fig
 
     def _operate(self, figsize, agent_index=None):

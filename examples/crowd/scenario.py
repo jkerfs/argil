@@ -1,8 +1,5 @@
-import numpy as np
-import pandas as pd
-
 from argil.simulations import RecordSimulation
-from argil.producers import MatplotlibProducer
+from argil.producers import MatplotlibProducer, D3Producer
 from argil import Object
 
 
@@ -36,3 +33,9 @@ class Scenario(object):
         mprod = MatplotlibProducer()
         anim = mprod.produce(rec)
         anim.display_gif(name, figsize, num_steps, inc)
+
+    def get_d3(self, num_steps=200, inc=1, speed=1):
+        rec = self.get_rec(num_steps, inc)
+
+        mprod = D3Producer(speed=speed)
+        mprod.produce(rec)

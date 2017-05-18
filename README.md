@@ -1,24 +1,35 @@
 # argil
 
-A simple library designed primarily for crowd and robot simulations in Python.
+A simple modeling library designed primarily for crowd and robot simulations in Python.
 
-## Project Goals:
+## Overview
+### Project Goals:
 
 1. straightforward interface and API
 2. flexible visualization and data collection
 3. contrib modules for crowd, geometry, robot algorithm primitives
 
-
-## Current Observers
+### Current Producers
 
 - d3 (https://d3js.org/)
 - matplotlib (http://matplotlib.org/)
-- pygame (http://www.pygame.org/lofi.html)
 - pandas (http://pandas.pydata.org/)
 
-## Roadmap
+### Current Simulators
 
-1. Document modeling api and individual observers
-2. Differentiate continuous observers (pygame) from one-shot observers (d3, matplotlib, pandas)
-3. Let agents access parameters of the environment
-4. Provide a hook for users to update environment parameters at each step
+- RecordSimulation (records are used by producers)
+- PygameSimulation (real-time visualization of the simulation)
+
+
+## Getting Started
+1. Clone this repo
+```
+git clone https://github.com/jkerfs/argil.git
+```
+
+2. Install package
+```
+pip install -e argil/
+```
+
+3. Run the examples found in `examples` folder

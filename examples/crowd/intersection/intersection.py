@@ -48,7 +48,7 @@ class IntersectionScenario(Scenario):
             vel = np.random.normal(1.0, .1)
 
             delay = int(np.random.uniform(1, 400))
-            agent = SocialForceAgent(startx, starty, .2, vel_max=vel, color=next(colors), delay=delay)
+            agent = SocialForceAgent(startx, starty, .2, vel_max=vel, color=next(colors), delay=delay, hide=True)
 
             agent.add_waypoint(start)
             agent.add_waypoint(mid)

@@ -58,7 +58,7 @@ class ForkScenario(Scenario):
             vel = max(np.random.normal(.3, .1), .3)
 
             delay = i * 50 + int(np.random.uniform(1, 10))
-            agent = SocialForceAgent(startx, starty, .2, vel_max=vel, color=next(colors), delay=delay)
+            agent = SocialForceAgent(startx, starty, .2, vel_max=vel, color=next(colors), delay=delay, hide=True)
             agent.add_waypoint((midx, midy))
             agent.add_waypoint((endx, endy))
             agent.index = i
@@ -66,7 +66,7 @@ class ForkScenario(Scenario):
 
         ob1 = Object(x=0, y=0, width=3.5, height=4.)
         ob2 = Object(x=6.5, y=0, width=3.5, height=4.)
-        ob3 = Object(x=0, y=6.5, width=10, height=3.)
+        ob3 = Object(x=0, y=6.5, width=10, height=3.5)
         objects = [ob1, ob2, ob3]
         env = Environment(agents, objects, self.width, self.height)
         return env

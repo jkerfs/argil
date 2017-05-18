@@ -41,7 +41,7 @@ class HallwayScenario(Scenario):
             vel = np.random.normal(.8, .1)
 
             delay = i * 10 + int(np.random.uniform(1, 10))
-            agent = SocialForceAgent(startx, starty, .2, vel_max=vel, color=next(colors), delay=delay)
+            agent = SocialForceAgent(startx, starty, .2, vel_max=vel, color=next(colors), delay=delay, hide=True)
 
             agent.add_waypoint(end)
             agent.index = i

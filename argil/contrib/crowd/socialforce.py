@@ -19,11 +19,11 @@ class SocialForceConstants:
 
 
 class SocialForceAgent(Agent):
-    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None, constants=None):
+    def __init__(self, x, y, radius, vel=(0, 0), vel_max=1.3, color="blue", delay=None, constants=None, hide=False):
         Agent.__init__(self)
         self.params = {"x": x, "y": y, "radius": radius, "waypoints": [],
                        "vel": vel, "vel_max": vel_max, "color": color, "delay": delay,
-                       "start_x": x, "start_y": y}
+                       "start_x": x, "start_y": y, "hide": hide}
         if not constants:
             self.constants = SocialForceConstants()
         else:
@@ -46,8 +46,8 @@ class SocialForceAgent(Agent):
             self.x = np.inf
             self.y = np.inf
         self.preferred = np.array([0., 0.])
-
-        self.ndir = np.random.choice([-1, 1])
+        self.hide = hide
+        self.ndir = 1#np.random.choice([-1, 1])
         self.odir = self.ndir * -1
 
     def add_waypoint(self, goal_pos):
@@ -67,8 +67,9 @@ class SocialForceAgent(Agent):
                 self.delay = None
 
         if self.done:
-            self.x = np.inf
-            self.y = np.inf
+            if self.hide:
+                self.x = np.inf
+                self.y = np.inf
             return True
         if len(self.waypoints) == 0:
             self.done = True
